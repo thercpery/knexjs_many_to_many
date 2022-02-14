@@ -1,0 +1,24 @@
+{
+  "name": "knexjs_many_to_many",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "migrate": "npx knex migrate:latest --knexfile db/knexfile.js",
+    "rollback": "npx knex migrate:rollback --knexfile db/knexfile.js",
+    "seed": "npx knex seed:run --knexfile db/knexfile.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "knex": "^1.0.3",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
