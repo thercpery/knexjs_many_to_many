@@ -1,4 +1,5 @@
 const express = require("express");
+const auth = require("../auth");
 const router = express.Router();
 const categoryController = require("../controllers/categories");
 
@@ -6,7 +7,7 @@ const categoryController = require("../controllers/categories");
 router.get("/", categoryController.viewAllCategories);
 
 // Create a category
-router.post("/", categoryController.createCategory);
+router.post("/", auth.verify, categoryController.createCategory);
 
 // Attach category to post
 router.post("/:id", categoryController.attachPostCategory);

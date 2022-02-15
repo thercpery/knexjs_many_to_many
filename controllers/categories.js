@@ -1,4 +1,5 @@
 const knex = require("../db/config");
+const auth = require("../auth");
 
 /* 
     Get all categories
@@ -18,35 +19,46 @@ exports.viewAllCategories = (req, res) => {
 /* 
     Add a category
     Business Logic:
-    1. Check the categories database if the given category exists.
-    2. If it does, return false.
-    3. If it doesn't, save it to the database.
+    1. Check if user logged in is an admin.
+    2. If the user is admin, check the categories database if the given category exists.
+    3. If it does, return false.
+    4. If it doesn't, save it to the database.
+    5. If user is not admin, return false.
 */
 
 exports.createCategory = (req, res) => {
     const categoryData = req.body;
-    knex.select().from("categories").where({
-        title: categoryData.title
-    })
-        .then(category => {
-            if(category.length !== 0){
-                // If it exists.
-                res.status(200).send(false);
-            }
-            else{
-                // If it does not exist.
-                knex("categories").insert(categoryData)
-                    .then(saved => res.status(201).send(true))
-                    .catch(err => {
-                        console.log(err);
-                        res.status(500).send(false);
-                    });
-            }
+    const userData = auth.decode(req.headers.authorization);
+    
+    if(userData.is_admin){
+        // If user is admin.
+        knex.select().from("categories").where({
+            title: categoryData.title
         })
-        .catch(err => {
-            console.log(err);
-            res.status(500).send(false);
-        });
+            .then(category => {
+                if(category.length !== 0){
+                    // If it exists.
+                    res.status(200).send(false);
+                }
+                else{
+                    // If it does not exist.
+                    knex("categories").insert(categoryData)
+                        .then(saved => res.status(201).send(true))
+                        .catch(err => {
+                            console.log(err);
+                            res.status(500).send(false);
+                        });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).send(false);
+            });
+    }
+    else{
+        // If user is not admin
+        res.status(200).send(false);
+    }
 };
 
 /* 
